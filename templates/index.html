@@ -5,10 +5,18 @@
   </head>
   <body>
     <h1>Tube Downloader</h1>
+    <div>{{ message }}</div><br>
     <form action="/" method="POST">
       <input type="text" name="url" size="100" placeholder="URL"><br>
       <input type="checkbox" name="audio_only" checked>Audio only (MP3)<br>
       <input type="submit" value="Download">
     </form>
+    <br><br>
+    <a href="https://github.com/rg3/youtube-dl/blob/master/docs/supportedsites.md" target="_blank">Supported Websites</a>
+    <hr>
+    <div>
+      Frontend for <a href="https://github.com/rg3/youtube-dl" target="_blank">youtube-dl</a><br>
+      Made with <a href="http://flask.pocoo.org/" target="_blank">Flask</a>
+    </div>
   </body>
 </html>

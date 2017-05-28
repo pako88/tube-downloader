@@ -9,6 +9,7 @@ from datetime import datetime
 import os
 
 import youtube_dl
+from youtube_dl import DownloadError
 
 class MyLogger(object):
     def debug(self, msg):
@@ -46,16 +47,19 @@ def index():
             }]
             ydl_opts['format'] = 'bestaudio/best'
         else:
-            ydl_opts['format'] = 'bestvideo[ext=mp4]+bestaudio[ext=m4a]/mp4'
+            ydl_opts['format'] = 'bestvideo[ext=mp4]+bestaudio[ext=m4a]/best[ext=mp4]/best'
 
-        with youtube_dl.YoutubeDL(ydl_opts) as ydl:
-            info_dict = ydl.extract_info(url, download=False)
-            file_name = ydl.prepare_filename(info_dict)
-            ydl.download([url])
-        if audio_only:
-            file_name = '%s.mp3' % os.path.splitext(file_name)[0]
-        else:
-            file_name = '%s.mp4' % os.path.splitext(file_name)[0]
+        try:
+            with youtube_dl.YoutubeDL(ydl_opts) as ydl:
+                info_dict = ydl.extract_info(url, download=False)
+                file_name = ydl.prepare_filename(info_dict)
+                ydl.download([url])
+            if audio_only:
+                file_name = '%s.mp3' % os.path.splitext(file_name)[0]
+            else:
+                file_name = '%s.mp4' % os.path.splitext(file_name)[0]
+        except DownloadError:
+            return render_template('index.html',message='Unsupported Website')
 
         @after_this_request
         def remove_file(response):
@@ -68,7 +72,7 @@ def index():
         return send_file(file_name, as_attachment=True)
 
     elif request.method == 'GET':
-        return render_template('index.html')
+        return render_template('index.html',message='')
 
 if __name__ == "__main__":
     app.run(host='0.0.0.0',port=80)
